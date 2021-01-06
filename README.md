@@ -106,7 +106,7 @@ vscode の拡張で prettier をインストールした後、設定の
 workspace で formatOnSave をオンにする。
 （そうすると.vscode フォルダができ、その中に setting.json が生成される）
 
-## React
+## JavaScript
 
 ### public/index.html と src/index.tsx の結びつき
 
@@ -124,3 +124,115 @@ workspace で formatOnSave をオンにする。
 
 main.chunk.js がレガシーな JS にコンパイルされたアプリの中身。
 この中にコンポーネントと同じ名前の関数が定義されている。
+
+### JavaScript における「オブジェクト」
+
+「JavaScript での『オブジェクト』は、暗黙の内に広義のオブジェクトと狭義のオブジェクトの 2 つがある。狭義のオブジェクトとはキーとそれに対応する値を持ったプロパティの集まりであり、一般的には『連想配列』と呼ばれる、Ruby のハッシュや Java の HashMap に相当するもの。それに対して広義のオブジェクトとは、プリミティブ値以外のすべてのものを指す」
+
+### プリミティブ型とは
+
+Boolean,Number,BigInt,String,Symbol,Null,Undefined
+の７種類。**「インスタンスメソッドを持たない」**
+- プリミティブ型の値を定義するのにはリテラルを使う
+
+- undefined はリテラルではなくプリミティブ型 undefined が格納されている「undifined」というグローバル変数
+- リテラルを用いて定義した値はプリミティブ型であってオブジェクトではない
+- null と undifined 以外のプリミティブ型には、それらを包容するラッパーオブジェクトがある
+  string→String、number→Number のように。
+- これらは JavaScript の言語処理系の標準組み込みオブジェクトである
+
+```javascript
+const hoge1 = "hoge"; // ①
+const hoge2 = new String("hoge"); // ②
+hoge1 === hoge2; // => false
+hoge1 === hoge2.valueOf(); // => true
+
+//　リテラルでの記述①は、内部でラッパーオブジェクト②のように自動変換される。
+// 値からメソッドが呼べるのは、この為である。(ラッパーオブジェクトのインスタンスメソッドを実行)
+```
+
+### 関数\_第一級オブジェクトとは
+
+JavaScript では関数は組み込みオブジェクト Function のインスタンスである。
+そして変数に代入できることもあり、「第一級オブジェクト」と呼ばれる。
+他のオブジェクト型の値と同様に変数に代入したり、配列の要素やオブジェクトのプロパティ値にしたりできる
+関数を第一級オブジェクトとして扱うことができる言語の性質を**第一級関数**という
+
+### クラスの正体
+
+```javascript
+class Bird {
+  constructor(name) {
+    this.name = name;
+  }
+  chirp = () => {
+    console.log(`${this.name}が鳴きました`);
+  };
+}
+
+console.log(typeof Bird); // => 'function'
+```
+
+class はコンストラクタ関数のシンタックスシュガーである。
+コンストラクタ関数とはクラスの中のコンストラクタではない。
+プロトタイプオブジェクトを継承してオブジェクトインスタンスを生成するための
+独立した関数のことである。
+
+### プロトタイプベース
+
+JavaScript はクラスベースではなく**プロトタイプベース**の言語。
+オブジェクトの抽象としてクラスの存在がない。
+オブジェクトは直接他のオブジェクトを継承する。
+その繰り返しによって構造的な表現をする。
+この繰り返しを**プロトタイプチェーン**と呼ぶ
+
+- クラス → 実態を持たない抽象概念
+- プロトタイプ → 実態のあるオブジェクト
+
+```
+> new Array(1, 2, 3);
+[ 1, 2, 3 ] > typeof Array // Array はコンストラクタ関数
+'function'
+> Array.prototype // Array に設定されているプロトタイプは []
+```
+
+### スプレッド構文はシャローコピー
+
+スプレッド構文を使ってオブジェクトをコピーしようとした時、
+コピーされるオブジェクトの深さが１段階までしか有効でないことに注意する。
+
+```javascript
+const patty = {
+  name: 'Patty Rabit',
+  email: 'patty@maple.town',
+  address: { town: 'Maple Town' } // １階層深いオブジェクト指定
+}
+
+const rolley = { ...patty, name: 'Rolley Cocker' };
+rolley.email = 'rolley@palm.town'
+rolley.address.town = 'Palm Town'
+
+console.log(patty)
+{
+  name: 'Patty Rabit',
+  email: 'patty@maple.town',
+  address: { town: 'Palm Town' } // バグ！ addressの参照先はコピーされず、元のままになる
+}
+```
+
+いったん文字列に展開してから JSON にパースし直すか、Lodash の cloneDeep()を使う
+などで対応する必要がある。
+
+### ショートサーキット評価(短絡評価)
+
+&&, ||, !, ? とかのやつ。
+右辺の評価を左辺の評価に委ねる記法。
+React 開発の文脈では文によって手続きを書き連ねるスタイルよりも
+こちらの方が好まれる。
+(return の中に書くときなどは if や else が使えなかったりする)
+
+### JavaScript における this
+
+**その関数が実行されるコンテキストであるオブジェクトへの参照が格納されている「暗黙の引数」**
+
+### モジュールシステム(require と import)
