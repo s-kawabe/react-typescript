@@ -155,7 +155,7 @@ hoge1 === hoge2.valueOf(); // => true
 // 値からメソッドが呼べるのは、この為である。(ラッパーオブジェクトのインスタンスメソッドを実行)
 ```
 
-### 関数_第一級オブジェクトとは
+### 関数\_第一級オブジェクトとは
 
 JavaScript では関数は組み込みオブジェクト Function のインスタンスである。<br>
 そして変数に代入できることもあり、「第一級オブジェクト」と呼ばれる。<br>
@@ -271,7 +271,7 @@ require と exports の問題を解決するべく<br>
   「どのようにデータ取得するか」でなく「どんなデータが欲しいか」記述<br>
   「どんなデータが欲しいか」の記述を複雑化するのは困難。<br>
   **そこで生まれたのが関数型プログラミングである。**
-  
+
   ```javascript
   // 関数型プログラミング例
   {
@@ -280,6 +280,7 @@ require と exports の問題を解決するべく<br>
     console.log(range(1, 101).filter((n) => n % 8 === 0));
   }
   ```
+
   可変性（Mutability）と不変性（Immutability）
 
 ---
@@ -403,3 +404,153 @@ class Rectangle implements Shape, Quadrangle {
 
 オーバーロードする予定がないメソッドの型定義はアロー関数で書いた方が<br>
 意図がわかりやすい。<br>
+
+### 型エイリアスとインターフェースの違い
+
+```ts
+type Unit = "USD" | "EUR" | "JPY" | "GBP";
+
+type TCurrency = {
+  unit: Unit;
+  amount: number;
+};
+
+interface ICurrency {
+  unit: Unit;
+  amount: number;
+}
+```
+
+型エイリアスは、新しい型を作るのではなく<br>
+「無名の文字列リテラル型にそれを参照するための別名を与える」<br>
+コンパイラはこれを区別している。<br>
+また、MappedType や ConditionalType が使える<br><br>
+
+インターフェース文は型の宣言なので、その型には本来の名前が与えられる<br>
+型エイリアスはすでに無名でつくられた型に別名を与える。<br>
+これは本来の名前が無いままになる。<br>
+またインターフェースでは、再定義のような書き方は<br>
+新規に上書きするのではなく拡張されていく。<br>
+
+### in 演算子
+
+for...in 文ではオブジェクトからインクリメンタルにキーを抽出する。<br>
+型のコンテキストでは、列挙された型の中から、各要素の型の値を抽出して**MappedTypes**を作れる。<br>
+
+```ts
+const obj = { a: 1, b: 2, c: 3 }
+console.log('a' in obj); // true
+
+type Fig = 'one' | 'two' | 'three';
+type FigMap = { [k in Fig]?: number };
+
+const figMap: FigMap = {
+  one: 1,
+  two: 2,
+  three; 3,
+};
+
+figMap.four = 4; // compile error!!
+```
+
+### keyof 演算子
+
+オブジェクトの型からキーを抜き出して列挙する。
+
+```ts
+const permissions = {
+  r: 0b100,
+  w: 0b010,
+  x: 0b001,
+}
+
+// permissionsからオブジェクト型を判定、そこからさらにkeyを抜き出してunion型にする
+type PermsChar = keyob typeof permissions // 'r' | 'w' | 'x'
+
+
+// Utility型をつくり、そこに型変換したpermissionsを渡して値を列挙する
+type ValueOf<T> = T[keyof T];
+type PermsNum = ValueOf<tyoeof permissions>; // 1 | 2 | 4
+```
+
+### 配列の要素から型を作りたいとき
+
+```ts
+const species = ["rabbit", "bear", "fox", "dog"] as const;
+type Species = typeof species[number]; // それぞれの名前のunion型ができる;
+```
+
+### テンプレートリテラル型
+
+JavaScript のテンプレートリテラルによる文字列を型として扱うことができる<br>
+タイポなどの防止に使えそう<br>
+→ DB へのクエリの生成とかに使う<br>
+
+```ts
+type DateFormat = `${number}-${number}-${number}`;
+const date1: DateFormat = "2020-12-05";
+const date2: DateFormat = "Dec. 5, 2020"; // compile error!
+```
+
+### 組み込みユーティリティ型
+
+#### 各プロパティの属性を変更する
+
+- Partial<T><br>
+  T のプロパティを全て省略可能にする
+- Required<T>
+  T のプロパティを全て必須にする
+- Readonly<T>
+  T のプロパティを全て読み取り専用にする
+
+#### オブジェクトの型からプロパティを取捨選択する
+
+- Pick<T,K><br>
+  T から K が指定するキーのプロパティだけ抽出する
+- Omit<T,K><br>
+  T から K が指定するキーのプロパティを省く
+
+```ts
+type Todo = {
+  title: string;
+  description: string;
+  isDone: boolean;
+};
+
+// 以下２つはどちらも同じ型になる
+type PickedTodo = Pick<Todo, "title" | "isDone">;
+type Omittedtodo = Omit<Todo, "description">;
+```
+
+#### 列挙的な型を加工する
+
+※Picked と Omit との違い → こっちは単なる union 型などの**要素**に限る
+
+- Extract<T,U><br>
+  T から U の要素だけを抽出する
+- Exclude<T,U><br>
+  T から U の要素を省く
+  <br>
+- NonNullable<T><br>
+  T から null と undefined を省く
+- Record<K,T><br>
+  K の要素をキーとしてプロパティの値の型を T としてオブジェクトの型を作成する
+  K は union 型？
+
+#### 関数を扱う
+
+- Parameters<T><br>
+  T の引数の型を抽出してタプル型で返す
+- ReturnType<T><br>
+  T の戻り値の型を返す
+
+#### 文字列リテラル型と組み合わせて使う
+
+- Uppercase<T><br>
+  T の各要素の文字列をすべて大文字にする
+- Lowercase<T><br>
+  T の各要素の文字列をすべて小文字にする
+- Capitalize<T><br>
+  T の各要素の文字列の頭を大文字にする
+- Uncapitalize<T><br>
+  T の各要素の文字列の頭を小文字にする
