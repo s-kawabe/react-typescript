@@ -35,3 +35,30 @@ if (data.isErr()) {
   const user = data.val;
   console.log(`Hello, ${user.name}`);
 }
+
+const rate: { [unit: string]: number } = {
+  USD: 1,
+  EUR: 0.9,
+  JPY: 108,
+  GBP: 0.8,
+};
+
+type hoge = typeof rate;
+type Unit = keyof typeof rate;
+
+// エラーにならない
+// const rate: { [unit: string]: number } = {
+//   1: 1,
+//   2: 0.9,
+//   3: 108,
+//   4: 0.8,
+// };
+
+const permissions = {
+  r: 0b100,
+  w: 0b010,
+  x: 0b001,
+};
+
+// permissionsからオブジェクト型を判定、そこからさらにkeyを抜き出してunion型にする
+type PermsChar = keyof typeof permissions; // 'r' | 'w' | 'x'
