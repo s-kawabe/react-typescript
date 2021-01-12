@@ -11,7 +11,7 @@
 - 内部では JSX は以下の様なコードに変換される
 
 ```jsx
-<button type="submit" autoFocus>
+<button type='submit' autoFocus>
   Click Here
 </button>
 ```
@@ -20,31 +20,35 @@
 
 ```jsx
 React.createElement(
-  "button",
-  { type: "submit", autoFocus: true },
-  "Click Here"
+  'button',
+  { type: 'submit', autoFocus: true },
+  'Click Here'
 );
 ```
 
-- React17.0 以降は新しい変換形式が導入されており、CreateReactApp でも 2020/10 以降はそれになっている
-- JSX の構文は最終的に`ReactElement`というインターフェースを元にしたオブジェクトになる<br>
+- React17.0 以降は新しい変換形式が導入されており、
+  CreateReactApp でも 2020/10 以降はそれになっている
+
+- JSX の構文は最終的に`ReactElement`というインターフェース
+  を元にしたオブジェクトになる
   (JSX → ReactElement)
-- テンプレート言語(ERB や JSP)との違いは、JSX は結果的にオブジェクトの表現になるので<br>
+- テンプレート言語(ERB や JSP)との違いは、
+  JSX は結果的にオブジェクトの表現になるので
   **プロパティ値にしたり関数の引数にしたりできる。**
 
 ## React は JS ファースト
 
-React においては関心の分離が MVC のような技術の役割ではなく機能で分離する。<br>
-そのパーツがコンポーネントになるという考え方。<br>
-独立した機能単位のパーツとして分割するためには、(疎結合にするためには)<br>
-そのパーツの中に UI とロジックを閉じ込める必要がある。<br><br>
+React においては関心の分離が MVC のような技術の役割ではなく機能で分離する。
+そのパーツがコンポーネントになるという考え方。
+独立した機能単位のパーツとして分割するためには、(疎結合にするためには)
+そのパーツの中に UI とロジックを閉じ込める必要がある。
 
-しかし、view レンダリングを HTML テンプレート基盤としている物も少なくない。<br>
-一方「JS ファースト」では一貫して JavaScript で view のレンダリングも行う。<br>
+しかし、view レンダリングを HTML テンプレート基盤としている物も少なくない。
+一方「JS ファースト」では一貫して JavaScript で view のレンダリングも行う。
 
-- HTML テンプレート派<br>
+- HTML テンプレート派
   Angular, Vue.js, Svelte
-- JS ファースト派<br>
+- JS ファースト派
   React, Preact, Cycle.js
 
 ## HTML テンプレートのデメリット
@@ -75,33 +79,171 @@ return (
 
 ### 暗黙的な props children
 
-暗黙的に props に渡される引数**children**は<br>
-`React.createElement()`の第３引数に相当するもの。<br>
+暗黙的に props に渡される引数**children**は
+`React.createElement()`の第３引数に相当するもの。
 
 ### 組み込みコンポーネントとユーザ定義コンポーネント
 
-`<p>, <h1>` → 　組み込み<br>
-`<Greets>, <TextInput>`　 → 　ユーザ定義<br><br>
+`<p>, <h1>` → 　組み込み
+`<Greets>, <TextInput>`　 → 　ユーザ定義
 
-ユーザ定義コンポーネントは必ず大文字で始める<br>
-そうしないと、JSX からコンポーネントとして呼べなくなる。<br>
-小文字で始まるタグ記述は全て組み込みコンポーネントと解釈される<br>
-TypeScript では`JSX.IntrinsicElements`インターフェースのキーに<br>
+ユーザ定義コンポーネントは必ず大文字で始める
+そうしないと、JSX からコンポーネントとして呼べなくなる。
+小文字で始まるタグ記述は全て組み込みコンポーネントと解釈される
+TypeScript では`JSX.IntrinsicElements`インターフェースのキーに
 組み込みで登録されているタグ名が列挙されている。
 
 ### リストレンダリング時の key
 
-ループ処理で同階層に同じ要素のリストを表示させる際に`key`属性<br>
-を指定する必要がある。<br>
-これの理想は、そのコレクションの各要素が持つユニーク ID であること。<br>
+ループ処理で同階層に同じ要素のリストを表示させる際に`key`属性
+を指定する必要がある。
+これの理想は、そのコレクションの各要素が持つユニーク ID であること。
 index を key に用いることは公式でも非推奨とされている。
 
 ### おまけ : aria-** と data-**
 
-ARIA(Accessible Rich Internet Applications)<br>
-Web アクセシビリティの標準を定めた規格。<br>
-聴覚障害者用の読み上げブラウザのために意味づけられたもの。<br><br>
+ARIA(Accessible Rich Internet Applications)
+Web アクセシビリティの標準を定めた規格。
+聴覚障害者用の読み上げブラウザのために意味づけられたもの。
 
-`data-*`は**カスタムデータ属性**という。<br>
-これにより開発者がオリジナルの属性を作れる。E2E テストで DOM を特定するために<br>
+`data-*`は**カスタムデータ属性**という。
+これにより開発者がオリジナルの属性を作れる。E2E テストで DOM を特定するために
 用いられることもある。
+
+## Linter とフォーマッター
+
+### ESLint
+
+**linter の歴史**
+
+2002 JSLint(by Douglas Crockford)
+2011 JSHint
+2013 ESLint,TSLint
+ESLint のみ、「開発社が独自の lint ルールを作れる」をコンセプトにしている。
+JSLint の思想とは正反対でコードの書き方を強制することは無い。
+
+---
+
+**TypeScript や他パッケージを最新化する**
+
+```
+% yarn upgrade-interactive --latest
+```
+
+TypeScript の最新版(4.1.3)で React 17.0 から導入された JSX の
+新しい変換形式が TypeScript の構文チェクを通るようになるので tsconfig.json を以下の様に編集
+
+```
+- "jsx": "react"
++ "jsx": "react-jsx"
+```
+
+---
+
+「TypeScript ESLint」のプロジェクトが提供するパッケージ群を使う。
+「typescript-eslint-parser」や「eslint-plugin-typescript」は
+既に非推奨となっている。
+
+**ESLint を除くエコシステムのパッケージは主に３種類**
+
+- パーサ(Parser)
+  ソースコードを特定の言語仕様に沿って解析してくれるライブラリ。ESLint には
+  JavaScript のパーサが組み込まれているが、標準では TypeScript には
+  対応していないので、TypeScript のパーサを導入する。
+
+- プラグイン(Plugin)
+  ESLint の組み込みルール以外に独自のルールを追加するもの。
+  それらを適用した推奨の共 有設定とパッケージングして提供されることが多い
+
+- 共有設定(Shareable Config)
+  複数のルールの適用をまとめて設定するもの。ESLint に同梱される
+  eslint:recommended や Airbnb 社が提供している eslint-config-airbnb55 が有名
+
+ESLint のパーサ「@typescript-eslint/parser」
+TypeScript のための ESLinst 標準ルールプラグイン「typescript-eslint/eslint-plugin」
+
+---
+
+**ESLint のファイルを生成する**
+
+```
+✔ Which framework does your project use? · react
+✔ Does your project use TypeScript? ·  Yes
+✔ Where does your code run? · browser
+✔ How would you like to define a style for your project? · guide
+✔ Which style guide do you want to follow? · airbnb
+✔ What format do you want your config file to be in? · JavaScript
+Checking peerDependencies of eslint-config-airbnb@latest
+The config that you've selected requires the following dependencies:
+✔ Would you like to install them now with npm? · No
+```
+
+```js
+module.exports = {
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: ['plugin:react/recommended', 'airbnb'],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 12,
+    sourceType: 'module',
+  },
+  plugins: ['react', '@typescript-eslint'],
+  rules: {},
+};
+```
+
+---
+
+**eslintrs.js の各プロパティ**
+
+- env
+  プログラムの実行環境を ESLint に教える。
+  個別の環境ごとに globals の値がプリセットされている
+
+- extends
+  共有設定を適用する
+
+- parser
+  ESLint が使用するパーサを指定する
+
+- parserOptions
+  パーサの各種実行オプションを設定する
+
+- plugins
+  任意のプラグインを組み込む
+
+- rules
+  適用する個々のルールおと、エラーレベルや例外などその他の設定値を記述する
+
+---
+
+**ESLint の適用ルールカスタマイズ**
+
+eslint-init の時に足りなかったものを yarn add
+
+```
+% yarn add -D eslint-plugin-react-hooks
+```
+
+`.eslintrc.js`に書き加えていく
+順番を変えると依存が壊されるものもあるので注意
+
+```js
+extends: [
+  'airbnb',
+  'airbnb/hooks',
+  'plugin:import/errors',
+  'plugin:import/warnings',
+  'plugin:import/typescript',
+  'plugin:@typescript-eslint/recommended',
+  'plugin:@typescript-eslint/recommended-requiring-type-checking',
+],
+```
+
+### Prettier
