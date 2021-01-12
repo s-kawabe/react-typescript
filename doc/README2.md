@@ -20,9 +20,9 @@
 
 ```jsx
 React.createElement(
-  'button',
-  { type: 'submit', autoFocus: true },
-  'Click Here'
+  "button",
+  { type: "submit", autoFocus: true },
+  "Click Here"
 );
 ```
 
@@ -184,16 +184,16 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['plugin:react/recommended', 'airbnb'],
-  parser: '@typescript-eslint/parser',
+  extends: ["plugin:react/recommended", "airbnb"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
     ecmaVersion: 12,
-    sourceType: 'module',
+    sourceType: "module",
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ["react", "@typescript-eslint"],
   rules: {},
 };
 ```
@@ -232,7 +232,169 @@ eslint-init の時に足りなかったものを yarn add
 ```
 
 `.eslintrc.js`に書き加えていく
-順番を変えると依存が壊されるものもあるので注意
+extends 内は順番を変えると依存が壊されるものもあるので注意
+
+```js
+module.exports = {
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: [
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+  ],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 12,
+    project: "./tsconfig.eslint.json",
+    sourceType: "module",
+    tsconfigRootDir: __dirname,
+  },
+  plugins: ["@typescript-eslint", "import", "jsx-a11y", "react", "react-hooks"],
+  root: true,
+  rules: {
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "lines-between-class-members": [
+      "error",
+      "always",
+      {
+        exceptAfterSingleLine: true,
+      },
+    ],
+    "no-void": [
+      "error",
+      {
+        allowAsStatement: true,
+      },
+    ],
+    "padding-line-between-statements": [
+      "error",
+      {
+        blankLine: "always",
+        prev: "*",
+        next: "return",
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        vars: "all",
+        args: "after-used",
+        argsIgnorePattern: "_",
+        ignoreRestSiblings: false,
+        varsIgnorePattern: "_",
+      },
+    ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        jsx: "never",
+        ts: "never",
+        tsx: "never",
+      },
+    ],
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        extensions: [".jsx", ".tsx"],
+      },
+    ],
+    "react/jsx-props-no-spreading": [
+      "error",
+      {
+        html: "enforce",
+        custom: "enforce",
+        explicitSpread: "ignore",
+      },
+    ],
+    "react/react-in-jsx-scope": "off",
+  },
+  overrides: [
+    {
+      files: ["*.tsx"],
+      rules: {
+        "react/prop-types": "off",
+      },
+    },
+  ],
+  settings: {
+    "import/resolver": {
+      node: {
+        paths: ["src"],
+      },
+    },
+  },
+};
+```
+
+---
+
+`,eslintignore`ファイルでチェックの対象外ファイルを指定する
+
+```
+build/
+public/
+**/coverage/
+**/node_modules/
+**/*.min.js
+*.config.js
+.*lintrc.js
+```
+
+---
+
+**setting.json に以下を追記する**
+
+```
+"editor.codeActionsOnSave": {
+  "source.fixAll.eslint": true
+},
+"editor.formatOnSave": false,
+"eslint.packageManager": "yarn",
+"typescript.enablePromptUseWorkspaceTsdk": true,
+```
+ファイル保存時にVSCode内部のものでなくESLintの自動整形が走るようにする
+また、プロジェクトにTypeScriptがインストールされている場合はどっちを使うか
+尋ねることができる。
+
+**package.jsonのscriptsに一括lintコマンドを追加**
+
+```
+"lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'"
+```
+
+### Prettier
+
+#### なぜPritterが必要か？
+ESLintでもコードフォーマッタとしてある程度は機能するが
+コードスタイルの一貫性を保つため、ESLintとは別途に
+用意することでよりPJのメンバー間で統一の取れたコードが書ける。
+
+#### 環境
+- prettier
+  Prettier本体
+
+- eslint-config-prettier
+  Prettierと競合する可能性のあるESLintの
+  各種ルールを向こうにする共有設定
+
+```
+% yarn add -D prettier eslint-config-prettier
+```
+
+#### .eslintrc.jsを書き換える
 
 ```js
 extends: [
@@ -243,7 +405,57 @@ extends: [
   'plugin:import/typescript',
   'plugin:@typescript-eslint/recommended',
   'plugin:@typescript-eslint/recommended-requiring-type-checking',
+  'prettier',
+  'prettier/@typescript-eslint',
+  'prettier/react',
 ],
 ```
+最後の３行。競合するルール設定を上書きして調整するものなので
+一番最後にするよう公式ドキュメントでも言われている。
 
-### Prettier
+#### .prettierrcファイルを作成
+
+'''json
+{
+  "singleQuote": true,
+  "trailingComma": "all"
+}
+'''
+１行の文字数やインデントに関するスタイルの設定値を記述する。
+この２つ以外はデフォルト値が設定される。
+
+#### ESLintとPrettierのルールが衝突していないか調べる
+
+```
+% npx eslint-config-prettier 'src/**/*.{js,jsx,ts,tsx}'
+```
+**=> No rules that are unnecessary or conflict with Prettier were found.**
+が出ればOK！！
+eslint-config-prettierは不要なルールやPrettierと衝突する
+ルールがないか検出するCLIツールを同梱している。
+エラーだった場合は`.eslintrc.js`の設定を削除したりする。
+
+#### Prettierをnpm-scriptsで実行する
+
+```json
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject",
+  "fix": "npmrun-sformat&&npmrun-slint:fix",
+  "format": "prettier--write--loglevel=warn'src/**/*.{js,jsx,ts,tsx,gql,graphql,json}'",
+  "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+  "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
+  "lint:conflict":"eslint--print-config.eslintrc.js|eslint-config-prettier-check",
+  "preinstall": "typesync"
+},
+```
+
+#### VSCodeの設定を行う
+
+setting.jsonに追記
+
+```json
+
+```

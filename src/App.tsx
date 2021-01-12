@@ -1,17 +1,6 @@
-import React from "react";
-import "./App.css";
-import Greets from "./Greets";
+import React from 'react';
+import './App.css';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <Greets name={"Patty"} times={3}>
-        <span role="img" aria-label="rabbit">
-          🐰
-        </span>
-      </Greets>
-    </div>
-  );
-};
+const App: React.FC = () => <div className="App" />;
 
 export default App;

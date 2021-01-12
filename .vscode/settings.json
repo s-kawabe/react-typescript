@@ -1,11 +1,28 @@
 {
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true // ファイル保存時にESLintでフォーマット
   },
-  "prettier.singleQuote": true,
-  "javascript.preferences.quoteStyle": "single",
-  "typescript.preferences.quoteStyle": "single",
-  "prettier.jsxSingleQuote": true,
-  "markdown.preview.breaks": true
+  "markdown.preview.breaks": true,
+  "eslint.packageManager": "yarn",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode", 
+  "[graphql]": {
+    "editor.formatOnSave": true 
+  },
+  "[javascript]": { 
+    "editor.formatOnSave": true
+  }, 
+  "[javascriptreact]": {
+    "editor.formatOnSave": true 
+  },
+  "[json]": { 
+    "editor.formatOnSave": true
+  }, 
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  }
 }
