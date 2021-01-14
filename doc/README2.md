@@ -457,5 +457,109 @@ eslint-config-prettierは不要なルールやPrettierと衝突する
 setting.jsonに追記
 
 ```json
-
+"editor.defaultFormatter": "esbenp.prettier-vscode", 
+  "[graphql]": {
+    "editor.formatOnSave": true 
+  },
+  "[javascript]": { 
+    "editor.formatOnSave": true
+  }, 
+  "[javascriptreact]": {
+    "editor.formatOnSave": true 
+  },
+  "[json]": { 
+    "editor.formatOnSave": true
+  }, 
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  }
 ```
+
+## Reactとフロントエンドの歴史
+
+### React登場の背景と歴史
+2005年 - Ajaxを取り入れた、GoogleMapがリリースされた。
+2006年 - JQueryリリース
+         prototype.jsやjQueryはフロントエンド第１世代。
+2008年 - HTML5のドラフトが発表される。
+　　　　　Wenアプリケーションのプラットフォームとしての機能やAPIを実装するための仕様。
+        GoogleがChromeのJS園児にであるV8をオープンソース化
+2011年 - AdobeのFlashPlayerの開発中止
+
+#### AngularJSの限界
+AngularJSは双方向データバインディングの実装アルゴリズムに難があったため、
+関しする値が増えるとパフォーマンスが極端に悪くなる傾向があった。
+この時、AngularJSはReactの勢いに影響を受けて後方互換性を
+無視してまで一から作り直すという決断をした。
+
+#### WebComponentsとは
+2011年10月にHTMLをプログラマブルに拡張し、開発者が自ら作成した
+カスタムタグを読み込んで使えるようにする**WebComponents**という
+技術をWeb標準の使用として広くブラウザに実装しようと提唱した。
+次の４つの仕様がある。
+- Custom Elements
+- Shadow DOM
+- HTML TEmplates
+- HTML Imports
+この中のCustome Elementsの思想がReactではJSXで記述する
+ReactElementオブジェクト、つまりReact Elementsになる。
+
+しかしWeb Components の理想自体は多くの人が共感するものだったが、
+それを具体的な形にした仕様とそこに至るプロセスに難があった。
+
+#### Reactのコンセプト
+- Declarative（宣言的）
+- Component-Based（コンポーネントベース）
+- Just The UI（UIにしか関知しない）
+  ReactはMVCのうちVだけで説明がつく。
+  (Vueはコンポーネント×MVVM)
+  フルスタックでないことが逆にReactの強みになっている。
+- Virtual DOM（仮想DOM）
+  ルートのレンダリングが発火され、そこから連鎖的に
+  コンポーネントをタッド定期、展開しつくされたツリーはリアルDOMに
+  変換されてブラウザが実際にレンダリングをすることになる。
+  このリアルDOMへの変換前の要素ツリーはメモリ上にキャッシュされる。
+  **仮想DOMというのは、メモリに展開されたイミュータブルな要素ツリー**
+- One-Way Dataflow（単方向データフロー）
+  双方向なデータバインディングはシンプルなアプリでは直感的であっても、
+  多くの状態を持つ大規模アプリでは簡単にスパゲッティになってしまう。
+- Learn Once, Write Anywhere
+  （一回習得すれば、あらゆるプラットフォームで開発できる）
+
+**stateのリフトアップ**
+フォームを実装する際は、その各パーツを子コンポーネントとして持つ単一の親コンポーネントをまず作成する。
+そしてその親コンポーネントでフォームデータを自身の state(状態)として持つ。 
+さらにそのstateを変更する関数を作り、それを子コンポーネントにpropsとして渡す。
+子コンポーネントは渡された関数をフォームパーツに仕込んでおいて、
+操作の際にそれが任意の引数でもって 実行されるようにする
+
+### 他の第３世代フレームワーク
+
+#### Angular 
+Angularの安定版2.0.0は2016年に出た。
+Angularの欠点はコンポーネントベースといいながら、モジュール、
+サービス、プロバイダなど覚えなきゃいけなことが多い。
+そして何かを定義するためには毎回でコレータ付きのクラスを作らなきゃいけない。
+
+TypeScriptの特定のバージョンと密結合しているので、
+TSのバージョンが上がってもAngularがそれに追随するまで最新の
+機能が使えないということが起こり得る。
+
+#### Vue
+VueはAngularJSから派生したフレームワークである。
+AngularJS の直感性を残しつつReactのコンポーネントベースアーキテクチャを取り入れた。
+Vue で評価されてる SFC(Single-File Component)
+も長期的に見ればコンポーネント の再分割を難しくし、
+リファクタリングの障害となる。またコンポーネントへ再利用可能な
+ロジックを追加するためにReactがはるか昔に捨てたmixinsという仕組みをずっと使い続けてる
+
+
+
+
+
+
+
+
