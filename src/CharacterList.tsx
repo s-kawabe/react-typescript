@@ -18,11 +18,7 @@ const CharacterList: FC<Props> = ({ school, characters }) => (
     <Heading size="xl" mb="40px">
       {school}
     </Heading>
-    <List
-      spacing={3}
-      bgGradient="linear(to-r, green.200, pink.500)"
-      w={[400, 600, 800]}
-    >
+    <List spacing={3} w={[400, 600, 800]}>
       {characters &&
         characters.map((item: Character) => (
           <ListItem key={item.id}>

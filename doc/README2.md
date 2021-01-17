@@ -561,8 +561,52 @@ Reactは仮想DOMをリアルなDOMにレンダリングすることで
 WEBアプリケーションとして動作する。
 その仮想DOMを構成するのが**ReactElements**
 
+### リストレンダリング時の注意
+JSXで要素をループ処理によって記述する場合
+各要素にユニークなkeyを明示する必要がある。
+これをしないとReactがブラウザにWarningを吐き出す。
+
+### state更新時の注意
+単純なアプリではあまり問題にならないが、クラスのstateの値の更新は 
+Reactによるレンダリング最適化処理の中で非同期に行われる。
+そのためstate更新メソッドで参照するstateの値はその瞬間での
+最新の値であることが厳密には保証されない。
+なのでstateの前の状態に依存するような変更処理は以下の様にして変更する。
+
+```tsx
+// 変更したい要素名とその値を直接記述する変更方法
+reset(): void { 
+  this.setState({ count: 0 });
+}
+
+// 以前のstateを引数にとり、新しいstateを返す変更方法
+increment(): void {
+  this.setState((state) => ({ count: state.count + 1 }));
+}
+```
+
+### eventを発火させる要素の特有の動きを抑制する
+イベントメソッドを以下のように記述することで、例えば<a>や<input type="submit">
+などの要素にイベントを与えた時のページリロードなどを防げる？
 
 
+```tsx
+reset = (e: SyntheticEvent) => { 
+  e.preventDefault(); 
+  this.setState({ count: 0 });
+};
+
+increment = (e: SyntheticEvent) => {
+  e.preventDefault();
+  this.setState((state) => ({ count: state.count + 1 }));
+};
+```
+
+## Hooksを知る
+
+### mixinsと交代したHOC
+HOC(Higher Order Component)は**高階コンポーネント**と呼ばれるパターン
+関数コンポーネントでありつつ、ContainerComponentを表現することができる。
 
 
 
