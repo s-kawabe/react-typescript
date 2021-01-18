@@ -608,5 +608,53 @@ increment = (e: SyntheticEvent) => {
 HOC(Higher Order Component)は**高階コンポーネント**と呼ばれるパターン
 関数コンポーネントでありつつ、ContainerComponentを表現することができる。
 
+### HOC(高階コンポーネント)を使う
+- 高階関数
+  関数を引数にとり、関数を戻り値として返す
+- HOC
+  コンポーネントを引数にとり、コンポーネントを戻り値として返す
+ 
+ ```tsx
+type Props = { target: string };
+
+const Hoc: React.FC<Props> = ({ target }) => <h1>Hello! {target}</h1>;
+
+const withTarget = (WrappedComponent: React.FC<Props>) =>
+  WrappedComponent({ target: 'Patty' });
+
+export default withTarget(Hoc);
+
+ ```
+
+ ### Hooksでstateを使う
+ `useState`を使う。
+ useStateは戻り値をしてstate変数とそのstate更新関数をタプルとして返す。
+ 
+ ```tsx
+ cont [count, setCount] = useState(0)
+ ```
+
+ TSでstateを使う際は、stateの方が推論できるかどうかということに
+ 注意する必要がある。
+
+ ```tsx
+ // authorはUserオブジェクトを格納で、初期値はundifined
+ const [author, setAuthor] = useState<User>();
+ // 初期値を渡しながらも型推論が使えない場合の書き方
+ // オブジェクト配列だけど初期値は空配列にしたい場合、コンパイラは分からないので明示してあげる
+ const [articles, setArticles] = useState<Article[]>([])
+ ```
+
+state更新時の書き方の注意
+前者は１しか加算されない。
+state変数はそのコンポーネントのレンダリングごとで一定になってしまうので
+state変数を相対的に変更する処理を行うときは、前の値を直接参照、変更するのを避けて
+必ず`setCount((c) => c + 1)`のように関数で書く
+
+```tsx
+const plusThreeDirectly = () => [0, 1, 2].forEach((_) => setCount(count + 1));
+const plusThreeWithFunction = () => [0, 1, 2].forEach((_) => setCount((c) => c + 1));
+```
+
 
 

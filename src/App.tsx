@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import './App.css';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import CharacterList, { Character } from './CharacterList';
+import HooksCounter from './HooksCounter';
 
 const App: FC = () => {
   const characters: Character[] = [
@@ -40,7 +41,7 @@ const App: FC = () => {
     <Tabs>
       <TabList>
         <Tab>List Rendering</Tab>
-        <Tab>Two</Tab>
+        <Tab>useState</Tab>
         <Tab>Three</Tab>
       </TabList>
 
@@ -53,10 +54,8 @@ const App: FC = () => {
             <CharacterList school="総北高校" characters={characters} />
           </div>
         </TabPanel>
-
-        <TabPanel>
-          <p>two!</p>
-        </TabPanel>
+        <HooksCounter />
+        <TabPanel />
 
         <TabPanel>
           <p>three!</p>
