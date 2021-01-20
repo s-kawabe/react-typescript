@@ -55,3 +55,64 @@ action creator関数の戻り値を使う様にする。**
 ### reducers
 
 reducerとは、`(prevState,action) => newState`で表現される**純粋関数**である。
+
+## ReduxStyleGuide
+Reduxを使用するとコードの記述量が多くなってしまう。
+そこに対するルール決めの動きがいくつか生まれ始めた。
+(例)
+- FSA(Flux Standard Action)
+- Ducks
+
+2019年11月に公式が出したガイドラインが**ReduxStyleGuide**
+
+### 優先度A：必須
+1. stateを直接書き換えない
+  
+2. reducerに副作用を持たせない
+   外部システム通信やreducerの外の変数を書き換えるなど
+
+3. シリアライズできない値をstateやactionに入れない
+  Promise関数やクラスインスタンスのような`JSON.stringfy()`したときに
+  値が同一であることが保証されないものをstateやactionに入れてはいけない
+
+4. storeは１アプリにつき１つのみ
+
+### 優先度B：強く推奨
+### 優先度C：普通に推奨
+- Actionに関するもの
+  5. actionをsetterでなくイベントとしてモデリングする
+  6. actionの名前は意味を的確にしたものにする
+  7. actionタイプ名を「ドメインモデル/イベント種別」のフォーマットで
+  8. actionをFSAに準拠させる
+  9. dispatchするactionは直に書かずaction creatorを使って生成
+
+- ツールやデザインパターンの利用に関するもの
+  10. Reduxのロジックを書くときはReduxToolkitを使う
+  11. イミュータブルな状態の更新にはImmerを使う
+  12. デバッグにはReduxDevTools拡張を使う
+  13. ファイル構造には「feature folder」またはDucksパターンを適用する
+
+- 設計に関するもの
+  14. どの状態をどこに持たせるかは柔軟に考える
+  15. フォームの状態をReduxに入れない
+  16. 複雑なロジックはコンポーネントの外に追い出す
+  17. 非同期処理にはReduxThunkを使う
+
+## ReduxToolkitを使う
+当初は「ReduxStarterKit」という名前で、
+最初のバージョンは2018年2月に公開された。
+
+**ReduxToolkitの提供する主要なAPI**
+- configureStore
+  各種デフォルト値が設定可能な`createStore`のカスタム版
+
+- createReducer
+  reducerの作成を簡単にしてくれる
+
+- createAction
+  action creatorを作成してくれる
+
+- createSlice
+  actionの定義とaction creator, reducerをまとめて生成できる
+
+
