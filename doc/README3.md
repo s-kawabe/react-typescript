@@ -115,4 +115,59 @@ Reduxを使用するとコードの記述量が多くなってしまう。
 - createSlice
   actionの定義とaction creator, reducerをまとめて生成できる
 
+### 良い構成はDucksパターンによるディレクトリ分けとcreateSlice使用
+**createSliceを定義したらトップレベルのファイルに追加**
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+
+// eslint-disable-next-line import/no-unresolved
+import { counterSlice } from 'features/counter';
+import reportWebVitals from './reportWebVitals';
+import App from './App';
+import 'semantic-ui-css/semantic.min.css';
+import './index.css';
+
+const store = configureStore({ reducer: counterSlice.reducer });
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root') as HTMLElement,
+);
+```
+
+**RTKを使用しないトップレベルファイル**
+
+```tsx
+import ReactDOM from 'react-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+
+import { counterReducer, initialState } from 'reducer';
+import reportWebVitals from './reportWebVitals';
+import App from './App';
+import 'semantic-ui-css/semantic.min.css';
+import './index.css';
+
+const store = createStore(counterReducer, initialState);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root') as HTMLElement,
+);
+```
+
+## useReducer
+Reduxではアプリケーションを包括するグローバルな状態をactionと
+reducerで管理していたが、useReducerは同じことを個別のコンポーネントで可能にするHooksAPI
+
+`const [state, dispatch] = useReducer(reducer, initialState)`
+
 
