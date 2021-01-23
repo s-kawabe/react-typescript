@@ -168,6 +168,23 @@ ReactDOM.render(
 Reduxではアプリケーションを包括するグローバルな状態をactionと
 reducerで管理していたが、useReducerは同じことを個別のコンポーネントで可能にするHooksAPI
 
+**useReducer**
 `const [state, dispatch] = useReducer(reducer, initialState)`
 
+**useState**
+`const [state, setState] = useState(initialState)`
+
+**createStore**
+`const store = createStore(reducer, initialState)`
+
+### stateHookの正体
+
+`useState`は機能を限定した`useReducer`である。
+Reduxではアプリケーションを包括するグローバルな状態をactionとreducerで管理していた。
+useReducerは同じことを個別のコンポーネントで可能にするHooks API
+
+
+
+
+# ReduxToolkitでサンプルアプリを作ってみる
 
