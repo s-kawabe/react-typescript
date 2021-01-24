@@ -184,7 +184,5 @@ Reduxではアプリケーションを包括するグローバルな状態をact
 useReducerは同じことを個別のコンポーネントで可能にするHooks API
 
 
-
-
 # ReduxToolkitでサンプルアプリを作ってみる
 
