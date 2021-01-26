@@ -1,7 +1,5 @@
 import React, { FC } from 'react';
 
-import CounterWidget from 'containers/templates/CounterWidget';
-
 import './App.css';
 
 const App: FC = () => (

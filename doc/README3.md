@@ -184,5 +184,73 @@ Reduxではアプリケーションを包括するグローバルな状態をact
 useReducerは同じことを個別のコンポーネントで可能にするHooks API
 
 
-# ReduxToolkitでサンプルアプリを作ってみる
+**クラスコンポーネントがstateをメンバー変数として持つのに対して
+stateHookはその状態をどこでどうやって保持しているか**
+ReactではVer16.0からFiberというレンダリングのためのアーキテクチャを導入している。
+Reactが提供する`useXXX`のHooksAPIコンポーネントの中で使用すると
+仮想DOMにマウントされたReactElementsが対応するFiberの「メモ化された状態」
+領域の中にそのHooksのオブジェクトがつくられる。
+
+
+## コンポーネントの中で非同期処理を行う
+コンポーネントの中で非同期処理をどこに記述するかという問題は
+当初のReactにとっては大きな課題であった。
+class componentの中で非同期処理を行い、フェッチした結果を
+stateに入れてrender()の中で表示させる方法は
+時間軸によって変わるライフサイクルメソッドの複数箇所に
+同じ処理を記述する必要があった。
+
+その後Reactの成長に伴い、Reduxでは**ミドルウェア**という仕組みが
+用意されていた。　外部からdispatcherを拡張して、
+reducerの実行前後に任意の処理を追加できるようにするためのもの。
+
+Reduxでは`createStore`の第３引数にdispatch()関数をラップした
+処理が記述されたミドルウェアを適用できる。
+
+**有名なミドルウェア**
+- Redux Persist (store内のstateをloal strageなどに永続化)
+- redux-logger (actionの発行とstateの遷移履歴の記録)
+- ReduxThunk, redux-saga, redux-observable (非同期処理を扱う)
+Redux公式サイトの「Ecosystem」に載っている。
+
+## Redux不要論
+React16.3.0でContextAPIが導入された。
+これはReact本体の機能のみでグローバルステートを管理するソリューション。
+
+```tsx
+const ThemeContext = React.createContext('light');
+
+constApp = () => {
+  const theme = useState('light');
+  return (
+    <ThemeContext.Provider value={theme}>
+      <ThemedButton /> 
+    </ThemeContext.Provider>
+  );
+};
+
+const ThemedButton = () => {
+  const theme = userContext(ThemeContext);
+  return <Button theme={theme} />; 
+}
+```
+## フロントエンドのマイクロサービスアーキテクチャ
+SPAへの要求が高度化するにつれて機能が増えていくと、
+モノリシックなアーキテクチャではいつか無理がきてしまう。
+究極的にはそれぞれのドメインに分割したコンポーネント群を
+Web Componentsの形式で出力し、それらを束ねてブラウザに
+読み込ませるようにすれば、各ドメインがどんなフレームワークで作られようが関係なくなる。
+
+フロントエンドで本格的にマイクロサービスアーキテクチャが導入されれば、
+中央集権的な状態管理手法派生率しなくなる。
+ドメイン単位で分割され、それぞれが依存することなく動作し、
+ときには異なるフレームワークで作られていることもあるコンポーネントなので
+個々がうまく競合することなく動作しなくてはならない。
+
+## GraphQL Apollo Clientの可能性
+Apollo ClientはReduxを縫合する形で構築されていたが、
+2017年10月リリースのver2からはReduxをパージして、自前で状態管理システム
+を持つ様になった。
+ローディング状態やエラー状態の管理加え、データはキャッシュベースで
+取り回され、そのキャッシュはApolloが勝手に正規化してくれたりする。
 
